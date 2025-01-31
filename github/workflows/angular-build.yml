@@ -1,0 +1,34 @@
+name: Angular Build with OpenAI Key
+
+on:
+  push: # Trigger on push to any branch
+  pull_request: # Trigger on pull requests targeting any branch7
+
+jobs:
+  build:
+    runs-on: macos-latest # Use macOS runners
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        # with:
+        # node-version: 16 # Adjust based on your Angular project
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Inject OpenAI Key
+        run: |
+          echo "export const environment = { production: true, openAiKey: '${{ secrets.OPENAI_KEY }}' };" > src/environments/environment.prod.ts
+
+      - name: Build Angular Application
+        run: npm run build -- --prod
+
+      - name: Upload build artifacts (optional)
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: dist/
